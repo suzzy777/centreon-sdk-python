@@ -154,7 +154,11 @@ class Service(CentreonDecorator, CentreonClass):
         values = [hostname, servicename, '|'.join(trap)]
         return self.webservice.call_clapi('settrap', 'SERVICE', values)
 
-    def delcontact(self, hostname, servicename, trap):
-        for i in trap:
-            values = [hostname, servicename, i]
-            self.webservice.call_clapi('deltrap', 'SERVICE', values)
+    def deltrap(self, hostname, servicename, trap):
+        try:
+            for i in trap:
+                values = [hostname, servicename, i]
+                self.webservice.call_clapi('deltrap', 'SERVICE', values)
+            return True
+        except Exception:
+            return False
