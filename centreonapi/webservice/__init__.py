@@ -5,6 +5,7 @@ import json
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 
+
 class Webservice(object):
     """
     Class for call Centreon Web Rest webservices
@@ -102,8 +103,15 @@ class Webservice(object):
             data=json.dumps(data),
             verify=self.check_ssl
         )
-        request.raise_for_status()
-        return request.json()
+        try:
+            request.raise_for_status()
+            return True, request.json()
+        except requests.HTTPError as e:
+            return False, json.dumps(['error',
+                                      {'message': str(e)},
+                                      {'code': str(e.response.status_code),
+                                       'reason': str(e.response.reason),
+                                       'text': e.response.text}])
 
     def centreon_realtime(self, action=None, obj=None, values=None):
         if self.auth_token is None:

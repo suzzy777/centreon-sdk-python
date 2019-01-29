@@ -62,11 +62,13 @@ class Commands(common.CentreonDecorator, common.CentreonClass):
 
     def _refresh_list(self):
         self.commands.clear()
-        for command in self.webservice.call_clapi(
-                'show',
-                self.__clapi_action)['result']:
-            command_obj = Command(command)
-            self.commands[command_obj.name] = command_obj
+        state, command = self.webservice.call_clapi(
+                            'show',
+                            self.__clapi_action)
+        if state and len(command['result']) > 0:
+            for c in command['result']:
+                command_obj = Command(c)
+                self.commands[command_obj.name] = command_obj
 
     @common.CentreonDecorator.pre_refresh
     def list(self):
