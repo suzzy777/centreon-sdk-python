@@ -56,9 +56,9 @@ class Commands(common.CentreonDecorator, common.CentreonClass):
         if not self.commands:
             self.list()
         if name in self.commands.keys():
-            return self.commands[name]
+            return True, self.commands[name]
         else:
-            raise ValueError("Command %s not found" % name)
+            return False, None
 
     def _refresh_list(self):
         self.commands.clear()

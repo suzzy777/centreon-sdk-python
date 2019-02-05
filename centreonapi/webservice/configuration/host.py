@@ -340,7 +340,9 @@ class Hosts(common.CentreonDecorator, common.CentreonClass):
         if not self.hosts:
             self.list()
         if name in self.hosts.keys():
-            return self.hosts[name]
+            return True, self.hosts[name]
+        else:
+            return False, None
 
     def _refresh_list(self):
         self.hosts.clear()

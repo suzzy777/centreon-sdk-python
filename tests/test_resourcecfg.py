@@ -67,7 +67,7 @@ class TestResourceCFG:
                       'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi',
                       json=wsresponses, status=200, content_type='application/json')
 
-        res = centreon_con.resourcecfgs.get('$_HOSTSNMPVERSION$')
+        _, res = centreon_con.resourcecfgs.get('$_HOSTSNMPVERSION$')
         assert res.name == "$_HOSTSNMPVERSION$"
 
     @responses.activate
@@ -78,7 +78,7 @@ class TestResourceCFG:
                       'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi',
                       json=wsresponses, status=200, content_type='application/json')
 
-        res = centreon_con.resourcecfgs.get('_HOSTSNMPVERSION')
+        _, res = centreon_con.resourcecfgs.get('_HOSTSNMPVERSION')
         assert res.name == "$_HOSTSNMPVERSION$"
 
     @responses.activate
@@ -88,9 +88,9 @@ class TestResourceCFG:
         responses.add(responses.POST,
                       'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi',
                       json=wsresponses, status=200, content_type='application/json')
-        with pytest.raises(ValueError):
-            centreon_con.resourcecfgs.get('empty')
-
+        state, res = centreon_con.resourcecfgs.get('empty')
+        assert state == False
+        assert res == None
 
 
     clapi_url = 'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi'

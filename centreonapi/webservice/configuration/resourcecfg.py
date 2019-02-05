@@ -57,9 +57,10 @@ class ResourceCFGs(common.CentreonDecorator, common.CentreonClass):
             self.list()
         rsc = self._build_resource_line(name)
         if rsc in self.resources.keys():
-            return self.resources[rsc]
+            return True, self.resources[rsc]
         else:
-            raise ValueError("Resource %s not found" % rsc)
+            return False, None
+
 
     def _refresh_list(self):
         self.resources.clear()

@@ -53,6 +53,6 @@ release: clean
 sdist: clean
 	#python setup.py sdist
 	#python setup.py bdist_wheel
-	python setup.py sdist bdist_wheel
+	python setup.py sdist
 	ls -l dist
 	#twine upload --repository-url https://test.pypi.org/legacy/ dist/*

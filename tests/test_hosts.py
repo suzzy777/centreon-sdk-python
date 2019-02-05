@@ -69,7 +69,7 @@ class TestHosts:
             responses.POST,
             self.clapi_url,
             json=wsresponses, status=200, content_type='application/json')
-        res = centreon_con.hosts.get('mail-uranus-frontend')
+        _, res = centreon_con.hosts.get('mail-uranus-frontend')
         assert res.id == "12"
 
     @responses.activate
@@ -80,7 +80,9 @@ class TestHosts:
             responses.POST,
             self.clapi_url,
             json=wsresponses, status=200, content_type='application/json')
-        assert centreon_con.hosts.get('empty') is None
+        state, res = centreon_con.hosts.get('empty')
+        assert state == False
+        assert res == None
 
     def test_hosts_add(self, centreon_con):
         values = [
