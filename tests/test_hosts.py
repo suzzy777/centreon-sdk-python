@@ -130,13 +130,17 @@ class TestHosts:
                 verify=True
             )
 
-    def test_hosts_delete_with_obj(self, centreon_con):
-        host = Hosts()
-        host.name = 'my_deleted_host'
+    @pytest.fixture()
+    def host_load_data(self):
+        with open(resource_dir / 'test_host_obj.json') as hdata:
+            return Host(json.load(hdata))
+
+    def test_hosts_delete_with_obj(self, centreon_con, host_load_data):
+        host = host_load_data
         data = dict()
         data['action'] = 'del'
         data['object'] = 'HOST'
-        data['values'] = 'my_deleted_host'
+        data['values'] = 'mail-uranus-frontend'
 
         with patch('requests.post') as patched_post:
             centreon_con.hosts.delete(host, post_refresh=False)
