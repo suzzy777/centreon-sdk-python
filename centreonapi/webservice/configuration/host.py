@@ -31,11 +31,14 @@ class Host(common.CentreonObject):
                             'getmacro',
                             self.__clapi_action,
                             self.name)
-        if state and len(macro['result']) > 0:
-            for m in macro['result']:
-                macro_obj = HostMacro(m)
-                self.macros[macro_obj.name] = macro_obj
-            return state, self.macros
+        if state:
+            if len(macro['result']) > 0:
+                for m in macro['result']:
+                    macro_obj = HostMacro(m)
+                    self.macros[macro_obj.name] = macro_obj
+                return state, self.macros
+            else:
+                return state, None
         else:
             return state, macro
 
@@ -63,11 +66,14 @@ class Host(common.CentreonObject):
                             'gettemplate',
                             self.__clapi_action,
                             self.name)
-        if state and len(template['result']) > 0:
-            for t in template['result']:
-                template_obj = HostTemplate(t)
-                self.templates[template_obj.name] = template_obj
-            return state, self.templates
+        if state:
+            if len(template['result']) > 0:
+                for t in template['result']:
+                    template_obj = HostTemplate(t)
+                    self.templates[template_obj.name] = template_obj
+                return state, self.templates
+            else:
+                return state, None
         else:
             return state, template
 
@@ -102,16 +108,22 @@ class Host(common.CentreonObject):
             self.name)
 
     def enable(self):
-        return self.webservice.call_clapi(
-            'enable',
-            self.__clapi_action,
-            self.name)
+        s, e = self.webservice.call_clapi(
+                'enable',
+                self.__clapi_action,
+                self.name)
+        if s:
+            self.activate = "1"
+        return s, e
 
     def disable(self):
-        return self.webservice.call_clapi(
-            'disable',
-            self.__clapi_action,
-            self.name)
+        s, e = self.webservice.call_clapi(
+                'disable',
+                self.__clapi_action,
+                self.name)
+        if s:
+            self.activate = "0"
+        return s, e
 
     def setinstance(self, instance):
         values = [self.name,
@@ -134,11 +146,13 @@ class Host(common.CentreonObject):
                         'getparent',
                         self.__clapi_action,
                         self.name)
-        if state and len(parent['result']) > 0:
-            for p in parent['result']:
-                parent_obj = Host(p)
-                self.parents[parent_obj.name] = parent_obj
-            return state, self.parents
+        if state:
+            if len(parent['result']) > 0:
+                for p in parent['result']:
+                    parent_obj = Host(p)
+                    self.parents[parent_obj.name] = parent_obj
+                return state, self.parents
+            return state, None
         else:
             return state, parent
 
@@ -171,11 +185,14 @@ class Host(common.CentreonObject):
                         'gethostgroup',
                         self.__clapi_action,
                         self.name)
-        if state and len(hgs['result']) > 0:
-            for h in hgs['result']:
-                hg_obj = HostGroup(h)
-                self.hostgroups[hg_obj.name] = hg_obj
-            return state, self.hostgroups
+        if state:
+            if len(hgs['result']) > 0:
+                for h in hgs['result']:
+                    hg_obj = HostGroup(h)
+                    self.hostgroups[hg_obj.name] = hg_obj
+                return state, self.hostgroups
+            else:
+                return state, None
         else:
             return state, hgs
 
@@ -208,11 +225,14 @@ class Host(common.CentreonObject):
                         'getcontactgroup',
                         self.__clapi_action,
                         self.name)
-        if state and len(cgs['result']) > 0:
-            for c in cgs['result']:
-                cg_obj = ContactGroup(c)
-                self.contactgroups[cg_obj.name] = cg_obj
-            return state, self.contactgroups
+        if state:
+            if len(cgs['result']) > 0:
+                for c in cgs['result']:
+                    cg_obj = ContactGroup(c)
+                    self.contactgroups[cg_obj.name] = cg_obj
+                return state, self.contactgroups
+            else:
+                return state, None
         else:
             return state, cgs
 
@@ -248,11 +268,14 @@ class Host(common.CentreonObject):
                         'getcontact',
                         self.__clapi_action,
                         self.name)
-        if state and len(cs['result']) > 0:
-            for c in cs['result']:
-                c_obj = Contact(c)
-                self.contacts[c_obj.name] = c_obj
-            return state, self.contacts
+        if state:
+            if len(cs['result']) > 0:
+                for c in cs['result']:
+                    c_obj = Contact(c)
+                    self.contacts[c_obj.name] = c_obj
+                return state, self.contacts
+            else:
+                return state, None
         else:
             return state, cs
 
@@ -394,7 +417,7 @@ class Hosts(common.CentreonDecorator, common.CentreonClass):
 
     @common.CentreonDecorator.post_refresh
     def delete(self, host, post_refresh=True):
-        value = str(common.build_param(host, Hosts)[0])
+        value = str(common.build_param(host, Host)[0])
         return self.webservice.call_clapi(
                     'del',
                     self.__clapi_action,

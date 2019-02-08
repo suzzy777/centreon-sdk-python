@@ -98,15 +98,15 @@ class Pollers(common.CentreonDecorator, common.CentreonClass):
         self.__clapi_action = 'INSTANCE'
 
     def __contains__(self, name):
-        return name in self.pollers.keys()
+        return name in self.pollers.keys() or None
 
     def __getitem__(self, name):
         if not self.pollers:
             self.list()
         if name in self.pollers.keys():
-            return self.pollers[name]
+            return True, self.pollers[name]
         else:
-            raise ValueError("Instance %s not found" % name)
+            return False, None
 
     def _refresh_list(self):
         self.pollers.clear()
