@@ -47,12 +47,14 @@ docs:
 	open docs/_build/html/index.html
 
 release: clean
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	python setup.py sdist
+	python setup.py bdist_wheel
+	twine upload dist/*
 
 sdist: clean
-	#python setup.py sdist
-	#python setup.py bdist_wheel
+	python setup.py bdist_wheel
 	python setup.py sdist
 	ls -l dist
-	#twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+
