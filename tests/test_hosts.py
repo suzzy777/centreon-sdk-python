@@ -188,7 +188,7 @@ class TestHost():
         _, res = host.getmacro()
         assert res["$_HOSTMATTERMOST_CHAN$"].name == "MATTERMOST_CHAN"
 
-    def test_host_setmacro(self, host_load_data):
+    def test_host_setmacro(self, host_load_data)
         host = host_load_data
         data = dict()
         data['action'] = 'setmacro'

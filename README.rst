@@ -5,7 +5,7 @@ Centreon SDK Python
 .. image:: https://badge.fury.io/py/centreonapi.png
     :target: http://badge.fury.io/py/centreonapi
 
-.. image:: https://travis-ci.com/guillaumewatteeux/centreon-sdk-python.svg?branch=dev
+.. image:: https://travis-ci.com/guillaumewatteeux/centreon-sdk-python.svg?branch=master
     :target: https://travis-ci.org/guillaumewatteeux/centreon-sdk-python
 
 Make a Python LIB for Centreon API
