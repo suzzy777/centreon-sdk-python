@@ -186,7 +186,7 @@ class TestHost():
                       self.clapi_url,
                       json=wsresponses, status=200, content_type='application/json')
         _, res = host.getmacro()
-        assert res["MATTERMOST_CHAN"].name == "MATTERMOST_CHAN"
+        assert res["$_HOSTMATTERMOST_CHAN$"].name == "MATTERMOST_CHAN"
 
     def test_host_setmacro(self, host_load_data):
         host = host_load_data
