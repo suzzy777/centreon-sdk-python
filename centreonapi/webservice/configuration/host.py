@@ -35,7 +35,7 @@ class Host(common.CentreonObject):
             if len(macro['result']) > 0:
                 for m in macro['result']:
                     macro_obj = HostMacro(m)
-                    self.macros[macro_obj.name] = macro_obj
+                    self.macros[macro_obj.engine_name] = macro_obj
                 return state, self.macros
             else:
                 return state, None
@@ -47,7 +47,8 @@ class Host(common.CentreonObject):
             description = ''
         if is_password is None:
             is_password = 0
-        values = [self.name, name.upper(), value, is_password, description]
+        macro = name.replace("_HOST", "").replace("$", "").upper()
+        values = [self.name, macro, value, is_password, description]
         return self.webservice.call_clapi(
             'setmacro',
             self.__clapi_action,
@@ -338,12 +339,13 @@ class HostMacro(common.CentreonObject):
         self.source = properties.get('source')
         if self.is_password == '':
             self.is_password = 0
+        self.engine_name = '$_HOST' + self.name + '$'
 
     def __repr__(self):
-        return self.name + ' / ' + self.value
+        return self.engine_name
 
     def __str__(self):
-        return self.name + ' / ' + self.value
+        return self.engine_name
 
 
 class Hosts(common.CentreonDecorator, common.CentreonClass):
