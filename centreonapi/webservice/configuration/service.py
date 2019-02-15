@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+<<<<<<< HEAD
 from centreonapi.webservice.configuration.common\
     import CentreonDecorator, CentreonClass, CentreonObject
 
@@ -19,6 +20,29 @@ class ServiceObj(CentreonObject):
         self.normal_check_interval = properties['normal check interval']
         self.passive_checks_enabled = properties['passive checks enabled']
         self.retry_check_interval = properties['retry check interval']
+=======
+#TODO: Not use service
+
+from centreonapi.webservice.configuration.common\
+    import CentreonDecorator, CentreonClass, CentreonObject
+
+
+class Service(CentreonObject):
+
+    def __init__(self, properties):
+        self.hostid = properties.get('host id')
+        self.hostname = properties.get('host name')
+        self.activate = properties.get('activate')
+        self.active_check_enabled = properties.get('active checks enabled')
+        self.check_command = properties.get('check command')
+        self.check_command_args = properties.get('check command arg')
+        self.description = properties.get('description')
+        self.id = properties.get('id')
+        self.max_check_attempts = properties.get('max check attempts')
+        self.normal_check_interval = properties.get('normal check interval')
+        self.passive_checks_enabled = properties.get('passive checks enabled')
+        self.retry_check_interval = properties.get('retry check interval')
+>>>>>>> fix service
 
     def __repr__(self):
         return str(self.hostname + '|' + self.description)
@@ -27,7 +51,11 @@ class ServiceObj(CentreonObject):
         return str(self.hostname + '|' + self.description)
 
 
+<<<<<<< HEAD
 class Service(CentreonDecorator, CentreonClass):
+=======
+class Services(CentreonDecorator, CentreonClass):
+>>>>>>> fix service
     """
     Centreon Web Service Object
     """
@@ -55,7 +83,11 @@ class Service(CentreonDecorator, CentreonClass):
     def _refresh_list(self):
         self.services.clear()
         for service in self.webservice.call_clapi('show', 'SERVICE')['result']:
+<<<<<<< HEAD
             service_obj = ServiceObj(service)
+=======
+            service_obj = Service(service)
+>>>>>>> fix service
             self.services[service_obj.id] = service_obj
 
     @CentreonDecorator.pre_refresh
@@ -162,3 +194,4 @@ class Service(CentreonDecorator, CentreonClass):
             return True
         except Exception:
             return False
+
