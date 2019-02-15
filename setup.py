@@ -4,14 +4,9 @@ import os
 import sys
 
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except ImportError:
-    from distutils.core import setup
-
-
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist upload')
-    sys.exit()
+    from distutils.core import setup, find_packages
 
 readme = open('README.rst').read()
 doclink = """
@@ -23,15 +18,13 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='centreonapi',
-    version='0.1.0',
+    version='0.1.5',
     description='Centreon Api for use Webservice in Centreon Web 2.8.0 or later',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Guillaume Watteeux',
     author_email='g@15x.fr',
-    url='https://github.com/guillaumewatteeux/centreonapi',
-    packages=[
-        'centreonapi',
-    ],
+    url='https://github.com/guillaumewatteeux/centreon-sdk-python',
+    packages=find_packages(),
     package_dir={'centreonapi': 'centreonapi'},
     include_package_data=True,
     install_requires=[
@@ -49,7 +42,8 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: Implementation :: PyPy',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
 )
 

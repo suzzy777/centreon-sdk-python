@@ -65,7 +65,7 @@ class TestCommands:
                       'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi',
                       json=wsresponses, status=200, content_type='application/json')
 
-        res = centreon_con.commands.get('OS-Linux-SNMP-Memory')
+        _, res = centreon_con.commands.get('OS-Linux-SNMP-Memory')
         assert res.id == "111"
 
     @responses.activate
@@ -75,8 +75,8 @@ class TestCommands:
         responses.add(responses.POST,
                       'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi',
                       json=wsresponses, status=200, content_type='application/json')
-        with pytest.raises(ValueError):
-            centreon_con.commands.get("empty")
+        state, cmd = centreon_con.commands.get("empty")
+        assert state == False
 
     def test_command_add(self, centreon_con):
         values = [

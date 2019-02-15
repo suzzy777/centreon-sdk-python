@@ -57,17 +57,20 @@ class ResourceCFGs(common.CentreonDecorator, common.CentreonClass):
             self.list()
         rsc = self._build_resource_line(name)
         if rsc in self.resources.keys():
-            return self.resources[rsc]
+            return True, self.resources[rsc]
         else:
-            raise ValueError("Resource %s not found" % rsc)
+            return False, None
+
 
     def _refresh_list(self):
         self.resources.clear()
-        for resource in self.webservice.call_clapi(
-                'show',
-                self.__clapi_action)['result']:
-            resource_obj = ResourceCFG(resource)
-            self.resources[resource_obj.name] = resource_obj
+        state, resource = self.webservice.call_clapi(
+                            'show',
+                            self.__clapi_action)
+        if state and len(resource['result']) > 0:
+            for r in resource['result']:
+                resource_obj = ResourceCFG(r)
+                self.resources[resource_obj.name] = resource_obj
 
     @common.CentreonDecorator.pre_refresh
     def list(self):

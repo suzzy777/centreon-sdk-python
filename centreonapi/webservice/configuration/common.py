@@ -4,8 +4,9 @@ from centreonapi.webservice import Webservice
 
 
 def build_param(param=None, objecttype=None, attr='name'):
-    if not param:
-        raise ("Param must be defined")
+    if param is None:
+        return param
+    #    raise ("Param must be defined")
     param_list = list()
     return_list = list()
     if not isinstance(param, list):
@@ -58,10 +59,12 @@ class CentreonClass(object):
         self.webservice = Webservice.getInstance()
         self.__clapi_action = ""
 
-    def get(self, name):
-        return self[name]
+    @CentreonDecorator.pre_refresh
+    def get(self, name, pre_refresh=False):
+        return self[name] or None
 
-    def exists(self, name):
+    @CentreonDecorator.pre_refresh
+    def exists(self, name, pre_refresh=False):
         return name in self
 
     def list(self):

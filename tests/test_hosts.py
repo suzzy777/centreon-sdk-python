@@ -7,7 +7,7 @@ import json
 import os
 from centreonapi.centreon import Centreon
 from centreonapi.webservice import Webservice
-from centreonapi.webservice.configuration.host import Hosts, Host, HostMacro, HostTemplate, HostParent
+from centreonapi.webservice.configuration.host import Hosts, Host, HostMacro, HostTemplate
 from centreonapi.webservice.configuration.poller import Poller
 from centreonapi.webservice.configuration.hostgroups import HostGroup
 from centreonapi.webservice.configuration.contact import ContactGroup, Contact
@@ -69,7 +69,7 @@ class TestHosts:
             responses.POST,
             self.clapi_url,
             json=wsresponses, status=200, content_type='application/json')
-        res = centreon_con.hosts.get('mail-uranus-frontend')
+        _, res = centreon_con.hosts.get('mail-uranus-frontend')
         assert res.id == "12"
 
     @responses.activate
@@ -80,15 +80,16 @@ class TestHosts:
             responses.POST,
             self.clapi_url,
             json=wsresponses, status=200, content_type='application/json')
-        with pytest.raises(ValueError):
-            centreon_con.hosts.get('empty')
+        state, res = centreon_con.hosts.get('empty')
+        assert state == False
+        assert res == None
 
     def test_hosts_add(self, centreon_con):
         values = [
             "new_host.tld",
             "new_host",
             "127.0.0.7",
-            "htmpl",
+            "OS-Linux-SNMP-custom|OS-Linux-SNMP-disk",
             "Central",
             "hg"
         ]
@@ -103,8 +104,8 @@ class TestHosts:
                 "new_host",
                 "127.0.0.7",
                 "Central",
-                "htmpl",
-                "hg",
+                ["OS-Linux-SNMP-custom", "OS-Linux-SNMP-disk"],
+                ["hg"],
                 post_refresh=False
             )
             patched_post.assert_called_with(
@@ -129,13 +130,17 @@ class TestHosts:
                 verify=True
             )
 
-    def test_hosts_delete_with_obj(self, centreon_con):
-        host = Hosts()
-        host.name = 'my_deleted_host'
+    @pytest.fixture()
+    def host_load_data(self):
+        with open(resource_dir / 'test_host_obj.json') as hdata:
+            return Host(json.load(hdata))
+
+    def test_hosts_delete_with_obj(self, centreon_con, host_load_data):
+        host = host_load_data
         data = dict()
         data['action'] = 'del'
         data['object'] = 'HOST'
-        data['values'] = 'my_deleted_host'
+        data['values'] = 'mail-uranus-frontend'
 
         with patch('requests.post') as patched_post:
             centreon_con.hosts.delete(host, post_refresh=False)
@@ -180,18 +185,18 @@ class TestHost():
         responses.add(responses.POST,
                       self.clapi_url,
                       json=wsresponses, status=200, content_type='application/json')
-        res = host.getmacro()
-        assert res["MATTERMOST_CHAN"].name == "MATTERMOST_CHAN"
+        _, res = host.getmacro()
+        assert res["$_HOSTMATTERMOST_CHAN$"].name == "MATTERMOST_CHAN"
 
     def test_host_setmacro(self, host_load_data):
         host = host_load_data
         data = dict()
         data['action'] = 'setmacro'
         data['object'] = 'HOST'
-        data['values'] = [host.name, 'MACRO_TEST', 'VALUE_TEST']
+        data['values'] = [host.name, 'MACRO_TEST', 'VALUE_TEST', '0', 'DESC']
 
         with patch('requests.post') as patched_post:
-            host.setmacro('MACRO_TEST', 'VALUE_TEST')
+            host.setmacro('MACRO_TEST', 'VALUE_TEST', '0', 'DESC')
             patched_post.assert_called_with(
                 self.clapi_url,
                 headers=self.headers,
@@ -225,8 +230,9 @@ class TestHost():
         responses.add(responses.POST,
                       self.clapi_url,
                       json=wsresponses, status=200, content_type='application/json')
-        res = host.gettemplate()
-        assert res['6'].name == "OS-Linux-SNMP-custom"
+        _, res = host.gettemplate()
+        print(res)
+        assert res["OS-Linux-SNMP-custom"].id == "6"
 
 
     def test_host_settemplate(self, host_load_data):
@@ -378,13 +384,13 @@ class TestHost():
         responses.add(responses.POST,
                       self.clapi_url,
                       json=wsresponses, status=200, content_type='application/json')
-        res = host.getparent()
+        _, res = host.getparent()
         assert res['mail-neptune-frontend'].id == "13"
 
     def test_host_addparent(self, host_load_data):
         host = host_load_data
         with open(resource_dir / 'test_host_parent.json') as parent:
-            parents = HostParent(json.load(parent))
+            parents = Host(json.load(parent))
 
         data = dict()
         data['action'] = 'addparent'
@@ -403,7 +409,7 @@ class TestHost():
     def test_host_setparent(self, host_load_data):
         host = host_load_data
         with open(resource_dir / 'test_host_parent.json') as parent:
-            parents = HostParent(json.load(parent))
+            parents = Host(json.load(parent))
 
         data = dict()
         data['action'] = 'setparent'
@@ -422,7 +428,7 @@ class TestHost():
     def test_host_setparent(self, host_load_data):
         host = host_load_data
         with open(resource_dir / 'test_host_parent.json') as parent:
-            parents = HostParent(json.load(parent))
+            parents = Host(json.load(parent))
 
         data = dict()
         data['action'] = 'delparent'
@@ -446,8 +452,7 @@ class TestHost():
         responses.add(responses.POST,
                           self.clapi_url,
                           json=wsresponses, status=200, content_type='application/json')
-        res = host.gethostgroup()
-        print(res)
+        _, res = host.gethostgroup()
         assert res['centreon-prj'].id == "115"
 
     def test_host_addparent(self, host_load_data):
@@ -516,7 +521,7 @@ class TestHost():
             responses.POST,
             self.clapi_url,
             json=wsresponses, status=200, content_type='application/json')
-        res = host.getcontactgroup()
+        _, res = host.getcontactgroup()
         assert res['astreinte'].id == "9"
 
     def test_host_addcontactgroupt(self, host_load_data):
@@ -585,7 +590,7 @@ class TestHost():
             responses.POST,
             self.clapi_url,
             json=wsresponses, status=200, content_type='application/json')
-        res = host.getcontact()
+        _, res = host.getcontact()
         assert res['astreinte'].id == "27"
 
     def test_host_addcontact(self, host_load_data):
