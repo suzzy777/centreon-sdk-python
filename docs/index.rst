@@ -13,6 +13,7 @@ Contents:
 
    installation
    usage
+   py-modindex
    contributing
    authors
    history
