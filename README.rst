@@ -104,9 +104,9 @@ Set Macros
 Documentation
 -------------
 
-Sphinx documentation here_
+Complete documentation here_
 
-.. _here: docs/_build/html/index.html
+.. _here: https://centreonapi.readthedocs.io/
 
 Features
 --------
