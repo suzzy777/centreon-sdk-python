@@ -26,6 +26,13 @@ class Host(common.CentreonObject):
         self.state = properties.get('state')
 
     def getmacro(self):
+        """
+        Get host's macros.
+
+        :return:
+            - bool: API call status
+            - dict: all macros on hosts
+        """
         self.macros.clear()
         state, macro = self.webservice.call_clapi(
                             'getmacro',
@@ -43,6 +50,15 @@ class Host(common.CentreonObject):
             return state, macro
 
     def setmacro(self, name, value, is_password=None, description=None):
+        """
+        Add or update macro
+
+        :param name: macro name
+        :param value: macro value
+        :param is_password: set to 1 if a macro password
+        :param description: macro description
+        :return:
+        """
         if description is None:
             description = ''
         if is_password is None:
@@ -55,6 +71,12 @@ class Host(common.CentreonObject):
             values)
 
     def deletemacro(self, macro):
+        """
+        Remove macro
+
+        :param macro: HostMacro
+        :return:
+        """
         values = [self.name,
                   "|".join(common.build_param(macro, HostMacro))]
         return self.webservice.call_clapi(
@@ -63,6 +85,13 @@ class Host(common.CentreonObject):
             values)
 
     def gettemplate(self):
+        """
+        Get host's Template
+
+        :return:
+            - bool: API call status
+            - dict: all templates on hosts
+        """
         state, template = self.webservice.call_clapi(
                             'gettemplate',
                             self.__clapi_action,
@@ -79,6 +108,12 @@ class Host(common.CentreonObject):
             return state, template
 
     def settemplate(self, template=None):
+        """
+        Define HostTemplate on host
+
+        :param template: HostTemplate, list(HosTemplate), str
+        :return:
+        """
         values = [self.name,
                   "|".join(common.build_param(template, HostTemplate))]
         return self.webservice.call_clapi(
@@ -87,6 +122,12 @@ class Host(common.CentreonObject):
             values)
 
     def addtemplate(self, template=None):
+        """
+        Add new HostTemplate on host
+
+        :param template: HostTemplate, list(HosTemplate), str
+        :return:
+        """
         values = [self.name,
                   "|".join(common.build_param(template, HostTemplate))]
         return self.webservice.call_clapi(
@@ -95,6 +136,12 @@ class Host(common.CentreonObject):
             values)
 
     def deletetemplate(self, template=None):
+        """
+        Delete HostTemplate on host
+
+        :param template: HostTemplate, list(HosTemplate), str
+        :return:
+        """
         values = [self.name,
                   str("|".join(common.build_param(template, HostTemplate)))]
         return self.webservice.call_clapi(

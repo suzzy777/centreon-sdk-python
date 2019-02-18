@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import centreonapi.webservice.configuration.common as common
+import bs4
 from centreonapi.webservice import Webservice
-from bs4 import BeautifulSoup
 
 
 class Command(common.CentreonObject):
@@ -22,7 +22,7 @@ class Command(common.CentreonObject):
                 command_line = "|".join(line)
             else:
                 command_line = line
-            command_line_soup = BeautifulSoup(command_line, "html.parser")
+            command_line_soup = bs4.BeautifulSoup(command_line, "html.parser")
             command_line_soup = str(command_line_soup).replace('<br/>', '\n')
             command_line_soup = str(command_line_soup).replace('&amp;', '&')
             return str(command_line_soup)
@@ -30,6 +30,13 @@ class Command(common.CentreonObject):
             return ""
 
     def setparam(self, name, value):
+        """
+        Set specific param for a command
+
+        :param name: param name
+        :param value: param value
+        :return:
+        """
         values = [
             self.name,
             name,
@@ -72,10 +79,24 @@ class Commands(common.CentreonDecorator, common.CentreonClass):
 
     @common.CentreonDecorator.pre_refresh
     def list(self):
+        """
+        List all commands
+
+        :return: dict: All Centreon command
+        """
         return self.commands
 
     @common.CentreonDecorator.post_refresh
     def add(self, cmdname, cmdtype, cmdline, post_refresh=True):
+        """
+        Add a command
+
+        :param cmdname: command name
+        :param cmdtype: command type (check, notif, misc or discovery)
+        :param cmdline: System command line that will be run on execution
+        :param post_refresh: boolean: refresh Commands object
+        :return:
+        """
         values = [
             cmdname,
             cmdtype,
@@ -88,5 +109,11 @@ class Commands(common.CentreonDecorator, common.CentreonClass):
 
     @common.CentreonDecorator.post_refresh
     def delete(self, command, post_refresh=True):
+        """
+        Delete a command
+        :param command: command name
+        :param post_refresh: boolean: refresh Commands object
+        :return:
+        """
         value = str(common.build_param(command, Command)[0])
         return self.webservice.call_clapi('del', self.__clapi_action, value)

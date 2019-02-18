@@ -12,6 +12,13 @@ Make a Python LIB for Centreon API
 
 Forked from https://github.com/centreon/centreon-sdk-python
 
+Install
+-------
+
+.. code-block:: shell
+
+    $ pip install centreonapi
+
 Usages
 ------
 
@@ -93,6 +100,13 @@ Set Macros
       'App-Monitoring-Centreon-Poller-custom': App-Monitoring-Centreon-Poller-custom
     }
 
+
+Documentation
+-------------
+
+Sphinx documentation here_
+
+.. _here: docs/_build/html/index.html
 
 Features
 --------

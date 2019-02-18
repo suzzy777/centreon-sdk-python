@@ -17,6 +17,13 @@ class ResourceCFG(common.CentreonObject):
         self.value = properties.get('value')
 
     def setparam(self, name, value):
+        """
+        Set specific param for a resource CFG
+
+        :param name: resource name
+        :param value: resource value
+        :return:
+        """
         values = [
             self.id,
             name,
@@ -74,6 +81,11 @@ class ResourceCFGs(common.CentreonDecorator, common.CentreonClass):
 
     @common.CentreonDecorator.pre_refresh
     def list(self):
+        """
+        List all ResourceCFG
+
+        :return: dict: All Centreon ResourceCFG
+        """
         return self.resources
 
     @common.CentreonDecorator.post_refresh

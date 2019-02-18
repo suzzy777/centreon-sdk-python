@@ -6,7 +6,7 @@ from centreonapi.webservice import Webservice
 def build_param(param=None, objecttype=None, attr='name'):
     if param is None:
         return param
-    #    raise ("Param must be defined")
+
     param_list = list()
     return_list = list()
     if not isinstance(param, list):
@@ -28,10 +28,11 @@ class CentreonDecorator(object):
         """
         Decorator that call __refresh_list() after func unless
         function's call contains 'post_refresh=False'
+
         eg:
-            @post_refresh
-            def hello(w, post_refresh=False):
-                ...
+        @post_refresh
+        def hello(w, post_refresh=False):
+            ...
         """
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
