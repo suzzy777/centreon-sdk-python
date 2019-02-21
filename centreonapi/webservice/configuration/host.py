@@ -386,8 +386,8 @@ class Host(common.CentreonObject):
         if s:
             current_param = {}
             for p in param['result']:
-                current_param[p.split(":")[0].strip()] = p.split(":")[1].strip()
-                self.params[p.split(":")[0].strip()] = p.split(":")[1].strip()
+                current_param[p.split(":", 1)[0].strip()] = p.split(":", 1)[1].strip()
+                self.params[p.split(":", 1)[0].strip()] = p.split(":", 1)[1].strip()
             return s, current_param
         else:
             return s, param
