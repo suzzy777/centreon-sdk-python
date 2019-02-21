@@ -40,7 +40,7 @@ class ResourceCFGs(common.CentreonDecorator, common.CentreonClass):
     """
     def __init__(self):
         super(ResourceCFGs, self).__init__()
-        self.resources = dict()
+        self.resources = {}
         self.__clapi_action = "RESOURCECFG"
 
     @staticmethod

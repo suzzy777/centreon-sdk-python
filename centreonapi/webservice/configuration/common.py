@@ -7,8 +7,8 @@ def build_param(param=None, objecttype=None, attr='name'):
     if param is None:
         return param
 
-    param_list = list()
-    return_list = list()
+    param_list = []
+    return_list = []
     if not isinstance(param, list):
         param_list.append(param)
     else:

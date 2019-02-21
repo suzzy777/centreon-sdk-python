@@ -17,12 +17,13 @@ class Host(common.CentreonObject):
         self.activate = properties.get('activate')
         self.address = properties.get('address')
         self.alias = properties.get('alias')
-        self.macros = dict()
-        self.templates = dict()
-        self.parents = dict()
-        self.hostgroups = dict()
-        self.contactgroups = dict()
-        self.contacts = dict()
+        self.macros = {}
+        self.templates = {}
+        self.parents = {}
+        self.hostgroups = {}
+        self.contactgroups = {}
+        self.contacts = {}
+        self.params = {}
         self.state = properties.get('state')
 
     def getmacro(self):
@@ -367,13 +368,45 @@ class Host(common.CentreonObject):
 
     def setparam(self, name, value):
         values = [self.name, name, value]
-        return self.webservice.call_clapi(
+        s, param = self.webservice.call_clapi(
             'setparam',
             self.__clapi_action,
             values)
+        if s:
+            self.params[name] = value
+        return s, param
 
     def getparam(self, name):
-        pass
+        values = [self.name, 'activate|' + "|".join(name)]
+        s, param = self.webservice.call_clapi(
+            'getparam',
+            self.__clapi_action,
+            values
+        )
+        if s:
+            current_param = {}
+            for p in param['result']:
+                current_param[p.split(":")[0].strip()] = p.split(":")[1].strip()
+                self.params[p.split(":")[0].strip()] = p.split(":")[1].strip()
+            return s, current_param
+        else:
+            return s, param
+
+    def getparams(self):
+        centreon_host_params = ['2d_coords', '3d_coords', 'action_url', 'activate', 'active_checks_enabled',
+                                'address', 'alias', 'check_command', 'check_command_arguments', 'check_interval',
+                                'check_freshness', 'check_period', 'contact_additive_inheritance',
+                                'cg_additive_inheritance', 'event_handler', 'event_handler_arguments',
+                                'event_handler_enabled', 'first_notification_delay', 'flap_detection_enabled',
+                                'flap_detection_options', 'host_high_flap_threshold', 'host_low_flap_threshold',
+                                'icon_image', 'icon_image_alt', 'max_check_attempts', 'name', 'notes', 'notes_url',
+                                'notifications_enabled', 'notification_interval', 'notification_options',
+                                'notification_period', 'recovery_notification_delay', 'obsess_over_host',
+                                'passive_checks_enabled', 'process_perf_data', 'retain_nonstatus_information',
+                                'retain_status_information', 'retry_check_interval', 'snmp_community',
+                                'snmp_version', 'stalking_options', 'statusmap_image', 'host_notification_options',
+                                'timezone']
+        return self.getparam(centreon_host_params)
 
 
 class HostMacro(common.CentreonObject):
@@ -402,7 +435,7 @@ class Hosts(common.CentreonDecorator, common.CentreonClass):
 
     def __init__(self):
         super(Hosts, self).__init__()
-        self.hosts = dict()
+        self.hosts = {}
         self.__clapi_action = 'HOST'
 
     def __contains__(self, name):

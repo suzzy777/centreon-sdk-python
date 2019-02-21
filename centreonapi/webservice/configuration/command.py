@@ -53,7 +53,7 @@ class Commands(common.CentreonDecorator, common.CentreonClass):
     """
     def __init__(self):
         super(Commands, self).__init__()
-        self.commands = dict()
+        self.commands = {}
         self.__clapi_action = "CMD"
 
     def __contains__(self, name):

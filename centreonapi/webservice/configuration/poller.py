@@ -19,7 +19,7 @@ class Poller(common.CentreonObject):
         self.ssh_port = properties.get('ssh port')
         self.stats_bin = properties.get('stats bin')
         self.status = properties.get('status')
-        self.pollerHost = dict()
+        self.pollerHost = {}
 
     def add(self, *args, **kwargs):
         pass
@@ -94,7 +94,7 @@ class Pollers(common.CentreonDecorator, common.CentreonClass):
 
     def __init__(self):
         super(Pollers, self).__init__()
-        self.pollers = dict()
+        self.pollers = {}
         self.__clapi_action = 'INSTANCE'
 
     def __contains__(self, name):

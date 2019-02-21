@@ -38,7 +38,7 @@ class Services(CentreonDecorator, CentreonClass):
 
     def __init__(self):
         super(Service, self).__init__()
-        self.services = dict()
+        self.services = {}
 
     def __contains__(self, item):
         pass

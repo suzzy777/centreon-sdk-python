@@ -93,7 +93,7 @@ class TestHosts:
             "Central",
             "hg"
         ]
-        data = dict()
+        data = {}
         data['action'] = 'add'
         data['object'] = 'HOST'
         data['values'] = values
@@ -116,7 +116,7 @@ class TestHosts:
             )
 
     def test_hosts_delete(self, centreon_con):
-        data = dict()
+        data = {}
         data['action'] = 'del'
         data['object'] = 'HOST'
         data['values'] = 'my_deleted_host'
@@ -137,7 +137,7 @@ class TestHosts:
 
     def test_hosts_delete_with_obj(self, centreon_con, host_load_data):
         host = host_load_data
-        data = dict()
+        data = {}
         data['action'] = 'del'
         data['object'] = 'HOST'
         data['values'] = 'mail-uranus-frontend'
@@ -190,7 +190,7 @@ class TestHost():
 
     def test_host_setmacro(self, host_load_data):
         host = host_load_data
-        data = dict()
+        data = {}
         data['action'] = 'setmacro'
         data['object'] = 'HOST'
         data['values'] = [host.name, 'MACRO_TEST', 'VALUE_TEST', '0', 'DESC']
@@ -208,7 +208,7 @@ class TestHost():
         host = host_load_data
         with open(resource_dir / 'test_host_macro.json') as m:
             macro = HostMacro(json.load(m))
-        data = dict()
+        data = {}
         data['action'] = 'delmacro'
         data['object'] = 'HOST'
         data['values'] = [host.name, 'NRPEPORT']
@@ -237,14 +237,14 @@ class TestHost():
 
     def test_host_settemplate(self, host_load_data):
         host = host_load_data
-        templates = list()
+        templates = []
         with open(resource_dir / 'test_host_template.json') as htlp:
             tmp = json.load(htlp)
             for tlp in tmp:
                 print(tlp)
                 templates.append(HostTemplate(tlp))
 
-        data = dict()
+        data = {}
         data['action'] = 'settemplate'
         data['object'] = 'HOST'
         data['values'] = [
@@ -262,14 +262,14 @@ class TestHost():
 
     def test_host_addtemplate(self, host_load_data):
         host = host_load_data
-        templates = list()
+        templates = []
         with open(resource_dir / 'test_host_template.json') as htlp:
             tmp = json.load(htlp)
             for tlp in tmp:
                 print(tlp)
                 templates.append(HostTemplate(tlp))
 
-        data = dict()
+        data = {}
         data['action'] = 'addtemplate'
         data['object'] = 'HOST'
         data['values'] = [
@@ -287,13 +287,13 @@ class TestHost():
 
     def test_host_deteletemplate(self, host_load_data):
         host = host_load_data
-        templates = list()
+        templates = []
         with open(resource_dir / 'test_host_template.json') as htlp:
             tmp = json.load(htlp)
             for tlp in tmp:
                 templates.append(HostTemplate(tlp))
 
-        data = dict()
+        data = {}
         data['action'] = 'deltemplate'
         data['object'] = 'HOST'
         data['values'] = [
@@ -311,7 +311,7 @@ class TestHost():
 
     def test_host_applytemplate(self, host_load_data):
         host = host_load_data
-        data = dict()
+        data = {}
         data['action'] = 'applytpl'
         data['object'] = 'HOST'
         data['values'] = "mail-uranus-frontend"
@@ -327,7 +327,7 @@ class TestHost():
 
     def test_host_enable(self, host_load_data):
         host = host_load_data
-        data = dict()
+        data = {}
         data['action'] = 'enable'
         data['object'] = 'HOST'
         data['values'] = "mail-uranus-frontend"
@@ -343,7 +343,7 @@ class TestHost():
 
     def test_host_disable(self, host_load_data):
         host = host_load_data
-        data = dict()
+        data = {}
         data['action'] = 'disable'
         data['object'] = 'HOST'
         data['values'] = "mail-uranus-frontend"
@@ -362,7 +362,7 @@ class TestHost():
         with open(resource_dir / 'test_host_poller.json') as instances:
             instance = Poller(json.load(instances))
 
-        data = dict()
+        data = {}
         data['action'] = 'setinstance'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "Central"]
@@ -392,7 +392,7 @@ class TestHost():
         with open(resource_dir / 'test_host_parent.json') as parent:
             parents = Host(json.load(parent))
 
-        data = dict()
+        data = {}
         data['action'] = 'addparent'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "mail-neptune-frontend"]
@@ -411,7 +411,7 @@ class TestHost():
         with open(resource_dir / 'test_host_parent.json') as parent:
             parents = Host(json.load(parent))
 
-        data = dict()
+        data ={}
         data['action'] = 'setparent'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "mail-neptune-frontend"]
@@ -430,7 +430,7 @@ class TestHost():
         with open(resource_dir / 'test_host_parent.json') as parent:
             parents = Host(json.load(parent))
 
-        data = dict()
+        data = {}
         data['action'] = 'delparent'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "mail-neptune-frontend"]
@@ -460,7 +460,7 @@ class TestHost():
         with open(resource_dir / 'test_host_hostgroup.json') as hg:
             hgs = HostGroup(json.load(hg))
 
-        data = dict()
+        data = {}
         data['action'] = 'addhostgroup'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "centreon-prod"]
@@ -479,7 +479,7 @@ class TestHost():
         with open(resource_dir / 'test_host_hostgroup.json') as hg:
             hgs = HostGroup(json.load(hg))
 
-        data = dict()
+        data = {}
         data['action'] = 'sethostgroup'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "centreon-prod"]
@@ -498,7 +498,7 @@ class TestHost():
         with open(resource_dir / 'test_host_hostgroup.json') as hg:
             hgs = HostGroup(json.load(hg))
 
-        data = dict()
+        data = {}
         data['action'] = 'delhostgroup'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "centreon-prod"]
@@ -529,7 +529,7 @@ class TestHost():
         with open(resource_dir / 'test_host_contactgroup.json') as cg:
             cgs = ContactGroup(json.load(cg))
 
-        data = dict()
+        data = {}
         data['action'] = 'addcontactgroup'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "astreinte"]
@@ -548,7 +548,7 @@ class TestHost():
         with open(resource_dir / 'test_host_contactgroup.json') as cg:
             cgs = ContactGroup(json.load(cg))
 
-        data = dict()
+        data = {}
         data['action'] = 'setcontactgroup'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "astreinte"]
@@ -567,7 +567,7 @@ class TestHost():
         with open(resource_dir / 'test_host_contactgroup.json') as cg:
             cgs = ContactGroup(json.load(cg))
 
-        data = dict()
+        data = {}
         data['action'] = 'delcontactgroup'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "astreinte"]
@@ -598,7 +598,7 @@ class TestHost():
         with open(resource_dir / 'test_host_contact.json') as c:
             cs = Contact(json.load(c))
 
-        data = dict()
+        data = {}
         data['action'] = 'addcontact'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "g15x"]
@@ -617,7 +617,7 @@ class TestHost():
         with open(resource_dir / 'test_host_contact.json') as c:
             cs = Contact(json.load(c))
 
-        data = dict()
+        data = {}
         data['action'] = 'setcontact'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "g15x"]
@@ -636,7 +636,7 @@ class TestHost():
         with open(resource_dir / 'test_host_contact.json') as c:
             cs = Contact(json.load(c))
 
-        data = dict()
+        data = {}
         data['action'] = 'delcontact'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "g15x"]
@@ -653,7 +653,7 @@ class TestHost():
     def test_host_setparam(self, host_load_data):
         host = host_load_data
 
-        data = dict()
+        data = {}
         data['action'] = 'setparam'
         data['object'] = 'HOST'
         data['values'] = ["mail-uranus-frontend", "notes", "tested"]
