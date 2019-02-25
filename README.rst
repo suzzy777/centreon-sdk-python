@@ -26,8 +26,8 @@ Usages
 
 .. code-block:: python
 
-    from centreonapi.centreon import Webservice
-    centreon = centreon("https://centreon.mydomain.tld, "admin", "centreon")
+    from centreonapi.centreon import Centreon
+    centreon = centreon("https://centreon.mydomain.tld", "admin", "centreon")
 
 * List all hosts on Centreon platform
 
