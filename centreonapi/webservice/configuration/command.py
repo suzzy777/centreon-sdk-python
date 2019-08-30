@@ -3,11 +3,13 @@
 import centreonapi.webservice.configuration.common as common
 import bs4
 from centreonapi.webservice import Webservice
+import centreonapi.webservice.configuration.factory.commandfactory as commandfactory
 
 
-class Command(common.CentreonObject):
+class Command(commandfactory.ObjCommand):
 
     def __init__(self, properties):
+        super(Command, self).__init__()
         self.webservice = Webservice.getInstance()
         self.__clapi_action = 'CMD'
         self.id = properties.get('id')
@@ -61,33 +63,33 @@ class Commands(common.CentreonDecorator, common.CentreonClass):
 
     def __getitem__(self, name):
         if not self.commands:
-            self.list()
+            self.list(name)
         if name in self.commands.keys():
             return True, self.commands[name]
         else:
             return False, None
 
-    def _refresh_list(self):
+    def _refresh_list(self, name=None):
         self.commands.clear()
         state, command = self.webservice.call_clapi(
                             'show',
-                            self.__clapi_action)
+                            self.__clapi_action,
+                            name)
         if state and len(command['result']) > 0:
             for c in command['result']:
                 command_obj = Command(c)
                 self.commands[command_obj.name] = command_obj
 
-    @common.CentreonDecorator.pre_refresh
-    def list(self):
+    def list(self, name=None):
         """
         List all commands
 
         :return: dict: All Centreon command
         """
+        self._refresh_list(name)
         return self.commands
 
-    @common.CentreonDecorator.post_refresh
-    def add(self, cmdname, cmdtype, cmdline, post_refresh=True):
+    def add(self, cmdname, cmdtype, cmdline):
         """
         Add a command
 
@@ -107,13 +109,15 @@ class Commands(common.CentreonDecorator, common.CentreonClass):
             self.__clapi_action,
             values)
 
-    @common.CentreonDecorator.post_refresh
-    def delete(self, command, post_refresh=True):
+    def delete(self, command):
         """
         Delete a command
         :param command: command name
         :param post_refresh: boolean: refresh Commands object
         :return:
         """
-        value = str(common.build_param(command, Command)[0])
-        return self.webservice.call_clapi('del', self.__clapi_action, value)
+        value = str(commandfactory.build_param_command(command)[0])
+        state, delete =  self.webservice.call_clapi('del', self.__clapi_action, value)
+        if state:
+            self.commands.pop(value, None)
+        return state, delete

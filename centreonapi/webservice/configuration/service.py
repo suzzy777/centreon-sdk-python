@@ -3,11 +3,12 @@
 
 #TODO: Not use service
 
-from centreonapi.webservice.configuration.common\
-    import CentreonDecorator, CentreonClass, CentreonObject
+import centreonapi.webservice.configuration.common as common
+import centreonapi.webservice.configuration.factory.servicefactory as servicefactory
+from centreonapi.webservice import Webservice
 
 
-class Service(CentreonObject):
+class Service(servicefactory.ObjService):
 
     def __init__(self, properties):
         self.hostid = properties.get('host id')
@@ -31,7 +32,7 @@ class Service(CentreonObject):
 
 
 
-class Services(CentreonDecorator, CentreonClass):
+class Services(common.CentreonClass):
     """
     Centreon Web Service Object
     """
@@ -39,6 +40,7 @@ class Services(CentreonDecorator, CentreonClass):
     def __init__(self):
         super(Service, self).__init__()
         self.services = {}
+        self.__clapi_action = 'SERVICE'
 
     def __contains__(self, item):
         pass
@@ -56,24 +58,27 @@ class Services(CentreonDecorator, CentreonClass):
     def exists(self, name, host):
         return True if self.get(name, host) else False
 
-    def _refresh_list(self):
+    def _refresh_list(self, name=None):
         self.services.clear()
-        for service in self.webservice.call_clapi('show', 'SERVICE')['result']:
-            service_obj = Service(service)
-            self.services[service_obj.id] = service_obj
+        state, service = self.webservice.call_clapi(
+                            'show',
+                            self.__clapi_action,
+                            name)
+        if state and len(service['result']) > 0:
+            for s in service['result']:
+                service_obj = Service(s)
+                self.services[service_obj.id] = service_obj
 
-    @CentreonDecorator.pre_refresh
-    def list(self):
+
+    def list(self, name=None):
         return self.services
 
-    @CentreonDecorator.post_refresh
     def add(self, hostname, servicename, template):
         values = [hostname, servicename, template]
         return self.webservice.call_clapi('add',
                                           'SERVICE',
                                           values)
 
-    @CentreonDecorator.post_refresh
     def delete(self, service):
         return self.webservice.call_clapi('del',
                                           'SERVICE',

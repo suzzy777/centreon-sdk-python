@@ -1,0 +1,6 @@
+{
+  "id": "1",
+  "name": "mail-backup",
+  "description": "sunday backup",
+  "activate": "1"
+}

@@ -115,9 +115,7 @@ class TestResourceCFG:
             centreon_con.resourcecfgs.add("resource_test",
                                           "ressource_value",
                                           "Central",
-                                          "comment",
-                                          post_refresh=False
-                                          )
+                                          "comment")
             patched_post.assert_called_with(self.clapi_url, headers=self.headers, data=json.dumps(data), verify=True)
 
     def test_resourcecfg_delete(self, centreon_con):
@@ -127,7 +125,7 @@ class TestResourceCFG:
         data['values'] = '42'
 
         with patch('requests.post') as patched_post:
-            centreon_con.resourcecfgs.delete('42', post_refresh=False)
+            centreon_con.resourcecfgs.delete('42')
             patched_post.assert_called_with(self.clapi_url, headers=self.headers, data=json.dumps(data), verify=True)
 
     @responses.activate

@@ -1,0 +1,16 @@
+{
+  "result": [
+    {
+      "id": "1",
+      "name": "mail-backup",
+      "description": "sunday backup",
+      "activate": "1"
+    },
+    {
+      "id": "2",
+      "name": "my downtime",
+      "description": "a description",
+      "activate": "1"
+    }
+    ]
+}

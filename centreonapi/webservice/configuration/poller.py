@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import centreonapi.webservice.configuration.common as common
+import centreonapi.webservice.configuration.factory.pollerfactory as pollerfactory
 from centreonapi.webservice import Webservice
 
 
-class Poller(common.CentreonObject):
+class Poller(pollerfactory.ObjPoller):
 
     def __init__(self, properties):
+        super(pollerfactory.ObjPoller, self).__init__()
         self.webservice = Webservice.getInstance()
         self.__clapi_action = 'INSTANCE'
         self.id = properties.get('id')
@@ -102,17 +104,18 @@ class Pollers(common.CentreonDecorator, common.CentreonClass):
 
     def __getitem__(self, name):
         if not self.pollers:
-            self.list()
+            self.list(name)
         if name in self.pollers.keys():
             return True, self.pollers[name]
         else:
             return False, None
 
-    def _refresh_list(self):
+    def _refresh_list(self, name=None):
         self.pollers.clear()
         state, poller = self.webservice.call_clapi(
                             'show',
-                            self.__clapi_action)
+                            self.__clapi_action,
+                            name)
         if state and len(poller['result']) > 0:
             for p in poller['result']:
                 poller_obj = Poller(p)
@@ -124,6 +127,6 @@ class Pollers(common.CentreonDecorator, common.CentreonClass):
         """
         return self.webservice.call_clapi('applycfg', None, pollername)
 
-    @common.CentreonDecorator.pre_refresh
-    def list(self):
+    def list(self, name=None):
+        self._refresh_list(name)
         return self.pollers

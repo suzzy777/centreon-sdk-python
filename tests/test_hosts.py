@@ -105,8 +105,7 @@ class TestHosts:
                 "127.0.0.7",
                 "Central",
                 ["OS-Linux-SNMP-custom", "OS-Linux-SNMP-disk"],
-                ["hg"],
-                post_refresh=False
+                ["hg"]
             )
             patched_post.assert_called_with(
                 self.clapi_url,
@@ -122,7 +121,7 @@ class TestHosts:
         data['values'] = 'my_deleted_host'
 
         with patch('requests.post') as patched_post:
-            centreon_con.hosts.delete('my_deleted_host', post_refresh=False)
+            centreon_con.hosts.delete('my_deleted_host')
             patched_post.assert_called_with(
                 self.clapi_url,
                 headers=self.headers,
@@ -143,7 +142,7 @@ class TestHosts:
         data['values'] = 'mail-uranus-frontend'
 
         with patch('requests.post') as patched_post:
-            centreon_con.hosts.delete(host, post_refresh=False)
+            centreon_con.hosts.delete(host)
             patched_post.assert_called_with(
                 self.clapi_url,
                 headers=self.headers,
@@ -152,7 +151,7 @@ class TestHosts:
             )
 
 
-class TestHost():
+class TestHost:
     clapi_url = 'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi'
     headers = {
         'Content-Type': 'application/json',

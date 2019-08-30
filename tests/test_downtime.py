@@ -6,8 +6,9 @@ import responses
 import json
 import os
 from centreonapi.centreon import Centreon
-from centreonapi.centreon import Webservice
-from centreonapi.webservice.configuration.command import Command
+from centreonapi.webservice import Webservice
+from centreonapi.webservice.configuration.downtime import Downtime
+from centreonapi.webservice.configuration.host import Host
 from mock import patch
 from path import Path
 
@@ -37,7 +38,86 @@ class TestConnect:
         assert mytoken == myconn.auth_token
 
 
-class TestCommands:
+class TestDowntimes:
+
+    clapi_url = 'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi'
+    headers = {
+                  'Content-Type': 'application/json',
+                  'centreon-auth-token': 'NTc1MDU3MGE3M2JiODIuMjA4OTA2OTc='
+                }
+
+
+    @pytest.fixture()
+    @responses.activate
+    def centreon_con(self):
+        url = "http://api.domain.tld/centreon"
+        username = "mytest"
+        password = "mypass"
+
+        wsresponses = '{"authToken": "NTc1MDU3MGE3M2JiODIuMjA4OTA2OTc="}'
+        responses.add(responses.POST,
+                      'http://api.domain.tld/centreon/api/index.php?action=authenticate',
+                      body=wsresponses, status=200, content_type='application/json')
+        return Centreon(url, username, password)
+
+    @responses.activate
+    def test_downtimes_get_one(self, centreon_con):
+        with open(resource_dir / 'test_downtime_list.json') as data:
+            wsresponses = json.load(data)
+        responses.add(responses.POST,
+                      'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi',
+                      json=wsresponses, status=200, content_type='application/json')
+
+        _, res = centreon_con.downtimes.get('1')
+        assert res.name == "mail-backup"
+
+
+    @responses.activate
+    def test_downtimes_not_exist(self, centreon_con):
+        with open(resource_dir / 'test_downtime_list.json') as data:
+            wsresponses = json.load(data)
+        responses.add(responses.POST,
+                      'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi',
+                      json=wsresponses, status=200, content_type='application/json')
+        state, res = centreon_con.downtimes.get('empty')
+        assert state == False
+        assert res == None
+
+
+    clapi_url = 'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi'
+    headers = {
+        'Content-Type': 'application/json',
+        'centreon-auth-token': 'NTc1MDU3MGE3M2JiODIuMjA4OTA2OTc='
+        }
+
+    def test_downtimes_add(self, centreon_con):
+        values = [
+            'mail-backup',
+            'sunday backup'
+        ]
+        data = {}
+        data['action'] = 'add'
+        data['object'] = 'DOWNTIME'
+        data['values'] = values
+
+        with patch('requests.post') as patched_post:
+            centreon_con.downtimes.add("mail-backup",
+                                       "sunday backup")
+            patched_post.assert_called_with(self.clapi_url, headers=self.headers, data=json.dumps(data), verify=True)
+
+    def test_downtimes_delete(self, centreon_con):
+        data = {}
+        data['action'] = 'del'
+        data['object'] = 'DOWNTIME'
+        data['values'] = '42'
+
+        with patch('requests.post') as patched_post:
+            centreon_con.downtimes.delete('42')
+            patched_post.assert_called_with(self.clapi_url, headers=self.headers, data=json.dumps(data), verify=True)
+
+
+class TestDowntime:
+
     clapi_url = 'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi'
     headers = {
         'Content-Type': 'application/json',
@@ -58,71 +138,25 @@ class TestCommands:
         return Centreon(url, username, password)
 
     @responses.activate
-    def test_command_list(self, centreon_con):
-        with open(resource_dir / 'test_commands_list.json') as data:
-            wsresponses = json.load(data)
-        responses.add(responses.POST,
-                      'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi',
-                      json=wsresponses, status=200, content_type='application/json')
-
-        _, res = centreon_con.commands.get('OS-Linux-SNMP-Memory')
-        assert res.id == "111"
-
-    @responses.activate
-    def test_command_not_exist(self, centreon_con):
-        with open(resource_dir / 'test_commands_list.json') as data:
-            wsresponses = json.load(data)
-        responses.add(responses.POST,
-                      'http://api.domain.tld/centreon/api/index.php?action=action&object=centreon_clapi',
-                      json=wsresponses, status=200, content_type='application/json')
-        state, cmd = centreon_con.commands.get("empty")
-        assert state == False
-
-    def test_command_add(self, centreon_con):
+    def test_downtime_setparam(self):
+        with open(resource_dir / 'test_downtime_1.json') as data:
+            dt = Downtime(json.load(data))
         values = [
-            'command_test',
-            'check',
-            '/my/plugins my command'
-        ]
-        data = {}
-        data['action'] = 'add'
-        data['object'] = 'CMD'
-        data['values'] = values
-
-        with patch('requests.post') as patched_post:
-            centreon_con.commands.add("command_test",
-                                          "check",
-                                          "/my/plugins my command"
-                                          )
-            patched_post.assert_called_with(self.clapi_url, headers=self.headers, data=json.dumps(data), verify=True)
-
-    def test_command_delete(self, centreon_con):
-        data = {}
-        data['action'] = 'del'
-        data['object'] = 'CMD'
-        data['values'] = 'command_test'
-
-        with patch('requests.post') as patched_post:
-            centreon_con.commands.delete('command_test')
-            patched_post.assert_called_with(self.clapi_url, headers=self.headers, data=json.dumps(data), verify=True)
-
-    @responses.activate
-    def test_command_setparam(self):
-        with open(resource_dir / 'test_commands_1.json') as data:
-            cmd = Command(json.load(data))
-        values = [
-            cmd.name,
-            'type',
-            'notif',
+            "mail-backup",
+            'name',
+            'mail-backup-new',
         ]
         data = {}
         data['action'] = 'setparam'
-        data['object'] = 'CMD'
+        data['object'] = 'DOWNTIME'
         data['values'] = values
 
         with patch('requests.post') as patched_post:
-            cmd.setparam('type', 'notif')
+            dt.setparam('name', 'mail-backup-new')
             patched_post.assert_called_with(self.clapi_url, headers=self.headers, data=json.dumps(data), verify=True)
 
 
-
+    @responses.activate
+    def test_downtime_addhost(self):
+        with open(resource_dir / 'test_host_obj.json') as data:
+            host = Host(json.load(data))

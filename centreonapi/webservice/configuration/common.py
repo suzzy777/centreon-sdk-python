@@ -21,6 +21,24 @@ def build_param(param=None, objecttype=None, attr='name'):
     return return_list
 
 
+def build_param2(param=None, classname=None, attr='name'):
+    if param is None:
+        return param
+
+    param_list = []
+    return_list = []
+    if not isinstance(param, list):
+        param_list.append(param)
+    else:
+        param_list = list(param)
+    for k in param_list:
+        if isinstance(k, str):
+            return_list.append(k)
+        elif k.__class__.__name__ == classname:
+            return_list.append(k.__dict__[attr])
+    return return_list
+
+
 class CentreonDecorator(object):
 
     @staticmethod
@@ -60,12 +78,10 @@ class CentreonClass(object):
         self.webservice = Webservice.getInstance()
         self.__clapi_action = ""
 
-    @CentreonDecorator.pre_refresh
-    def get(self, name, pre_refresh=False):
+    def get(self, name):
         return self[name] or None
 
-    @CentreonDecorator.pre_refresh
-    def exists(self, name, pre_refresh=False):
+    def exists(self, name):
         return name in self
 
     def list(self):
