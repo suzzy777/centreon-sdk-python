@@ -63,6 +63,8 @@ class TestHosts:
 
     @responses.activate
     def test_hosts_list(self, centreon_con):
+        wsresponses = '{"authToken": "NTc1MDU3MGE3M2JiODIuMjA4OTA2OTc="}'
+        responses.add(responses.POST, 'http://api.domain.tld/centreon/api/index.php?action=authenticate', body=wsresponses, status=200, content_type='application/json')
         with open(resource_dir / 'test_hosts_list.json') as data:
             wsresponses = json.load(data)
         responses.add(
